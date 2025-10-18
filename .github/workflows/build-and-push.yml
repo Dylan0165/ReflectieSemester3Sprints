@@ -1,17 +1,12 @@
-# MAN6 CI/CD Pipeline - Build Docker Image and Push to GHCR
-name: Build and Push Docker Image
+name: Build and Push Reflectie Website
 
 on:
   push:
     branches:
-      - main
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: reflectie-website
+      - deploy
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,11 +16,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
 
       - name: Install dependencies
         run: npm ci
@@ -33,46 +27,11 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=latest
-            type=raw,value=${{ github.run_number }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Build Docker image
-        run: |
-          docker build -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest .
-          docker build -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.run_number }} .
+        run: docker build -t ghcr.io/dylan0165/reflectie-website:latest .
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u dylan0165 --password-stdin
 
       - name: Push Docker image
-        run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
-
-      - name: Image deployment summary
-        run: |
-          echo "## 🚀 Docker Image Published" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Registry:** ${{ env.REGISTRY }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** ${{ github.repository_owner }}/${{ env.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
-          echo "- \`latest\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`${{ github.run_number }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Pull Command" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        run: docker push ghcr.io/dylan0165/reflectie-website:latest
