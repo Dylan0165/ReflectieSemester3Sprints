@@ -43,18 +43,18 @@ jobs:
           rm -rf .deploy-tmp
           mkdir -p .deploy-tmp
           cp -r manifests .deploy-tmp/
-          cp -r dist .deploy-tmp/
+          cp -r dist .deploy-tmp/manifests/base/
           cd .deploy-tmp
           
           if grep -q "index.html=" manifests/base/kustomization.yaml; then
-            sed -i 's#index.html=.*#index.html=../../dist/index.html#' manifests/base/kustomization.yaml
+            sed -i 's#index.html=.*#index.html=./dist/index.html#' manifests/base/kustomization.yaml
           else
             cat >> manifests/base/kustomization.yaml <<'EOF'
           
           configMapGenerator:
             - name: webapp-files
               files:
-                - index.html=../../dist/index.html
+                - index.html=./dist/index.html
           generatorOptions:
             disableNameSuffixHash: true
           EOF

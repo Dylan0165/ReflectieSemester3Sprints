@@ -8,7 +8,7 @@ resources:
 configMapGenerator:
   - name: webapp-files
     files:
-      - index.html=../../dist/index.html
+      - index.html=./dist/index.html
 
 generatorOptions:
   disableNameSuffixHash: true
