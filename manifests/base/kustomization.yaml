@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment.yaml
+  - service.yaml
+
+commonLabels:
+  app.kubernetes.io/managed-by: argocd
+  app.kubernetes.io/part-of: reflectie-website
+
+commonAnnotations:
+  argocd.argoproj.io/sync-options: Prune=true
+  argocd.argoproj.io/sync-wave: "1"
+
+# Resource tuning
+replicas:
+  - name: webapp
+    count: 2
+
+configMapGenerator:
+  - name: webapp-files
+    files:
+      - index.html=./dist/index.html
+generatorOptions:
+  disableNameSuffixHash: true
