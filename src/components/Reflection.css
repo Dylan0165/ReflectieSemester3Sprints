@@ -1,0 +1,49 @@
+.reflection {
+  min-height: 100vh;
+  padding: 6rem 2rem;
+  background: white;
+}
+
+.reflection-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.reflection h2 {
+  font-size: 2.5rem;
+  color: #006039;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.reflection-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.reflection-section {
+  background: #f8f9fa;
+  padding: 2.5rem;
+  border-radius: 10px;
+  border-left: 4px solid #D4AF37;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.reflection-section h3 {
+  font-size: 1.8rem;
+  color: #006039;
+  margin-bottom: 1.5rem;
+}
+
+.reflection-section p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .reflection-section {
+    padding: 1.5rem;
+  }
+}

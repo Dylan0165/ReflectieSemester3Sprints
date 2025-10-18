@@ -1,0 +1,76 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: linear-gradient(135deg, #006039 0%, #004d2e 100%);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.topbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar-logo a {
+  text-decoration: none;
+}
+
+.topbar-logo h2 {
+  color: #D4AF37;
+  margin: 0;
+  font-size: 1.5rem;
+  transition: opacity 0.3s;
+}
+
+.topbar-logo h2:hover {
+  opacity: 0.9;
+}
+
+.topbar-nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.topbar-nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.topbar-nav a:hover {
+  color: #D4AF37;
+}
+
+.topbar-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #D4AF37;
+  transition: width 0.3s;
+}
+
+.topbar-nav a:hover::after {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .topbar-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .topbar-nav {
+    gap: 1rem;
+  }
+}

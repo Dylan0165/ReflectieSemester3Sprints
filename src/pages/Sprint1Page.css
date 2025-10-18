@@ -1,0 +1,82 @@
+.sprint-hero {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #006039 0%, #004d2e 100%);
+  color: white;
+  text-align: center;
+  padding: 4rem 2rem;
+  margin-top: 70px;
+}
+
+.sprint-hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.sprint-hero-content p {
+  font-size: 1.3rem;
+  opacity: 0.95;
+}
+
+.sprint-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.reflection-block {
+  background: white;
+  padding: 3rem;
+  margin-bottom: 2.5rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  border-left: 5px solid #D4AF37;
+}
+
+.reflection-block h2 {
+  font-size: 2rem;
+  color: #006039;
+  margin-bottom: 1.5rem;
+}
+
+.reflection-block p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+.reflection-block ul {
+  list-style: none;
+  padding: 0;
+}
+
+.reflection-block ul li {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.reflection-block ul li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #D4AF37;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+@media (max-width: 768px) {
+  .sprint-hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .reflection-block {
+    padding: 2rem;
+  }
+}

@@ -1,0 +1,28 @@
+.assignment-page-hero {
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #D4AF37 0%, #b8941f 100%);
+  color: #1a1a1a;
+  text-align: center;
+  padding: 4rem 2rem;
+  margin-top: 70px;
+}
+
+.assignment-hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.assignment-hero-content p {
+  font-size: 1.3rem;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .assignment-hero-content h1 {
+    font-size: 2rem;
+  }
+}

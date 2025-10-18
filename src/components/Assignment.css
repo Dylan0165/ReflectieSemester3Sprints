@@ -1,0 +1,114 @@
+.assignment {
+  min-height: 100vh;
+  padding: 6rem 2rem;
+  background: white;
+  color: #333;
+}
+
+.assignment-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.assignment h2 {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.assignment-content {
+  background: white;
+  color: #333;
+  padding: 3rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.assignment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #D4AF37;
+}
+
+.assignment-header h3 {
+  font-size: 2rem;
+  color: #006039;
+  margin: 0;
+}
+
+.assignment-badge {
+  background: #006039;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.assignment-description,
+.assignment-technologies {
+  margin-bottom: 2rem;
+}
+
+.assignment-description h4,
+.assignment-technologies h4 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.assignment-description p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+.tech-tags {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tech-tag {
+  background: linear-gradient(135deg, #006039 0%, #004d2e 100%);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 25px;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.assignment-note {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border-left: 4px solid #D4AF37;
+  margin-top: 2rem;
+}
+
+.assignment-note p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .assignment-content {
+    padding: 2rem;
+  }
+  
+  .assignment-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .assignment-header h3 {
+    font-size: 1.5rem;
+  }
+}
