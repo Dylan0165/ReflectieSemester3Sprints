@@ -5,5 +5,9 @@ resources:
   - deployment.yaml
   - service.yaml
 
-# Let op: de CI workflow voegt/forceert hieronder de verwijzing naar ../../dist/index.html
-# via configMapGenerator zodat Nginx de gebuilde site serveert.
+configMapGenerator:
+  - name: webapp-files
+    files:
+      - index.html=../../dist/index.html
+generatorOptions:
+  disableNameSuffixHash: true

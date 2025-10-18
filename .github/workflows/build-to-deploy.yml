@@ -52,7 +52,7 @@ jobs:
             cat >> manifests/base/kustomization.yaml <<'EOF'
           
           configMapGenerator:
-            - name: web-content
+            - name: webapp-files
               files:
                 - index.html=../../dist/index.html
           generatorOptions:
