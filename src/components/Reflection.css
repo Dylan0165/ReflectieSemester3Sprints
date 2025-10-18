@@ -1,19 +1,43 @@
 .reflection {
   min-height: 100vh;
   padding: 6rem 2rem;
-  background: white;
+  background: linear-gradient(180deg, #001a12 0%, #002618 50%, #001a12 100%);
+  position: relative;
+}
+
+.reflection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 96, 57, 0.03) 1px,
+      transparent 2px,
+      transparent 100px
+    );
+  pointer-events: none;
 }
 
 .reflection-container {
   max-width: 1000px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .reflection h2 {
   font-size: 2.5rem;
-  color: #006039;
+  color: #D4AF37;
   margin-bottom: 3rem;
   text-align: center;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  letter-spacing: 3px;
+  text-transform: uppercase;
 }
 
 .reflection-content {
@@ -23,23 +47,63 @@
 }
 
 .reflection-section {
-  background: #f8f9fa;
+  background: rgba(0, 96, 57, 0.1);
   padding: 2.5rem;
-  border-radius: 10px;
-  border-left: 4px solid #D4AF37;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 
+    0 0 30px rgba(0, 96, 57, 0.3),
+    inset 0 0 20px rgba(0, 96, 57, 0.1);
+  position: relative;
+  transition: all 0.4s;
+  clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
+}
+
+.reflection-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  background: linear-gradient(180deg, #D4AF37, #00ff88);
+  box-shadow: 0 0 10px #D4AF37;
+  transition: height 0.6s;
+}
+
+.reflection-section:hover::before {
+  height: 100%;
+}
+
+.reflection-section:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 
+    0 0 40px rgba(212, 175, 55, 0.4),
+    inset 0 0 30px rgba(0, 96, 57, 0.2);
+  transform: translateX(10px);
 }
 
 .reflection-section h3 {
   font-size: 1.8rem;
-  color: #006039;
+  color: #D4AF37;
   margin-bottom: 1.5rem;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  letter-spacing: 2px;
+}
+
+.reflection-section h3::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 2px;
+  background: #00ff88;
+  margin-top: 0.5rem;
+  box-shadow: 0 0 5px #00ff88;
 }
 
 .reflection-section p {
   font-size: 1.1rem;
   line-height: 1.8;
-  color: #555;
+  color: #c0c0c0;
 }
 
 @media (max-width: 768px) {

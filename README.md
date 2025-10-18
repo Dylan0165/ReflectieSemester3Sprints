@@ -4,10 +4,23 @@ Een moderne React-website voor het reflecteren op sprint 1 en 2 van semester 3, 
 
 ## 🎨 Design
 
-Deze website gebruikt het Rolex kleurenschema:
-- **Groen**: #006039 (Rolex groen)
-- **Goud**: #D4AF37 (accent kleur)
-- **Zwart**: #1a1a1a (footer/headers)
+Deze website combineert een **Cyberpunk-Tech** thema met het iconische **Rolex kleurenschema**:
+
+### Kleuren
+- **Rolex Groen**: #006039 (primary)
+- **Goud**: #D4AF37 (accent & glow effects)
+- **Tech Groen**: #00ff88 (cyberpunk accenten)
+- **Zwart**: #0a0a0a (achtergrond)
+
+### Effecten & Animaties
+- ✨ Glowing text effects met shadows
+- 🌟 Geanimeerde tech grid achtergronden
+- 🔷 Scanning line effecten
+- 💫 Particle floating animations
+- ⚡ Hover transformaties en transitions
+- 🎯 Neon-style borders
+- 🌀 Rotating gradient borders
+- 📡 Tech-inspired clip-path designs
 
 ## 📁 Project Structuur
 

@@ -1,9 +1,22 @@
 .footer {
-  background: #1a1a1a;
-  color: white;
+  background: #0a0a0a;
+  color: #808080;
   padding: 2rem;
   text-align: center;
-  border-top: 3px solid #D4AF37;
+  border-top: 2px solid rgba(212, 175, 55, 0.5);
+  box-shadow: 0 -10px 30px rgba(0, 96, 57, 0.3);
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+  box-shadow: 0 0 10px #D4AF37;
 }
 
 .footer-container {
