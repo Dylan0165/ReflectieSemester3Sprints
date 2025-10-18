@@ -38,6 +38,23 @@ src/
 │   ├── Sprint2Page.jsx # Sprint 2 reflectie
 │   └── AssignmentPage.jsx # Opdracht pagina
 └── App.jsx            # Hoofd app met routing
+
+manifests/              # Kubernetes manifests
+├── base/              # Base resources
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   └── kustomization.yaml
+└── overlays/          # Environment-specific
+    ├── test/
+    └── prod/
+
+argocd/                # Argo CD Applications
+├── app-test.yaml
+└── app-prod.yaml
+
+.github/
+└── workflows/
+    └── ci-cd.yml      # GitHub Actions pipeline
 ```
 
 ## 🚀 Development
@@ -65,7 +82,19 @@ npm run build
 
 Realiseer een deployment pipeline voor het inzetten van een (web-)service zonder downtime voor deployment (push-on-green) naar test/acc-omgeving en handmatige goedkeuring naar productie-omgeving.
 
-**Technologieën**: Jenkins, Git, ArgoCD
+**Technologieën**: Jenkins, Git, ArgoCD, Kubernetes (k3s), Kustomize
+
+### 🚀 Deployment Architectuur
+
+Deze applicatie gebruikt een volledige **GitOps** workflow:
+
+1. **Code Push** → GitHub Repository
+2. **CI/CD Pipeline** → GitHub Actions (build & docker image)
+3. **Test Environment** → Automatische deployment via Argo CD (push-on-green)
+4. **Production Environment** → Handmatige approval vereist
+5. **Zero Downtime** → RollingUpdate strategie
+
+📖 **Zie [DEPLOYMENT.md](./DEPLOYMENT.md) voor volledige deployment instructies**
 
 ## 📄 Pagina's
 
