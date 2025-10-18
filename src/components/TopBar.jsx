@@ -7,7 +7,7 @@ function TopBar() {
       <div className="topbar-container">
         <div className="topbar-logo">
           <Link to="/">
-            <h2>Dylan Schuurman</h2>
+            <h2>Dylan  Schuurman</h2>
           </Link>
         </div>
         <div className="topbar-nav">
