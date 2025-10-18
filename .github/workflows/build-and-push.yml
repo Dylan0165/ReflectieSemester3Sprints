@@ -11,6 +11,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/reflectie-website:latest
 
     steps:
       - name: Checkout repository
@@ -27,11 +29,16 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
+      - name: Normalize GHCR tag to lowercase
+        id: normalize
+        run: |
+          echo "IMAGE_TAG=$(echo $GHCR_IMAGE | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Build Docker image
-        run: docker build -t ghcr.io/dylan0165/reflectie-website:latest .
+        run: docker build -t ${{ env.IMAGE_TAG }} .
 
       - name: Login to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u dylan0165 --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push Docker image
-        run: docker push ghcr.io/dylan0165/reflectie-website:latest
+        run: docker push ${{ env.IMAGE_TAG }}
