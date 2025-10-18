@@ -3,7 +3,7 @@ name: Build static site and publish to deploy-static
 on:
   push:
     branches:
-      - deploy
+      - main
 
 jobs:
   build:
