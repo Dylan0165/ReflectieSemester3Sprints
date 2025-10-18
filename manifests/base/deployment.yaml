@@ -3,45 +3,58 @@ kind: Deployment
 metadata:
   name: webapp
   labels:
-    app: webapp
+    app.kubernetes.io/name: webapp
+    app.kubernetes.io/part-of: reflectie-website
 spec:
   replicas: 2
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
   selector:
     matchLabels:
-      app: webapp
+      app.kubernetes.io/name: webapp
   template:
     metadata:
       labels:
-        app: webapp
+        app.kubernetes.io/name: webapp
     spec:
       containers:
-        - name: nginx
-          image: ghcr.io/dylan0165/reflectie-website:latest
+        - name: webapp
+          image: ghcr.io/dylan0165/reflectie-website:latest # Will be overridden by overlay
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - name: http
+              containerPort: 80
               protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 3
-            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
           livenessProbe:
             httpGet:
               path: /
-              port: 80
+              port: http
             initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
             periodSeconds: 10
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "128Mi"
-              cpu: "100m"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 101  # nginx user
+            runAsGroup: 101
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: nginx-cache
+          emptyDir: {}

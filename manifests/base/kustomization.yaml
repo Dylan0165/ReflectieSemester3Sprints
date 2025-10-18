@@ -6,5 +6,14 @@ resources:
   - service.yaml
 
 commonLabels:
-  app: webapp
-  managed-by: kustomize
+  app.kubernetes.io/managed-by: argocd
+  app.kubernetes.io/part-of: reflectie-website
+
+commonAnnotations:
+  argocd.argoproj.io/sync-options: Prune=true
+  argocd.argoproj.io/sync-wave: "1"
+
+# Resource tuning
+replicas:
+  - name: webapp
+    count: 2
