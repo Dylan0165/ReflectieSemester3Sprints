@@ -15,3 +15,8 @@ spec:
       nodePort: 32080
       protocol: TCP
       name: http
+  # Session affinity voor consistente gebruikerservaring
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600

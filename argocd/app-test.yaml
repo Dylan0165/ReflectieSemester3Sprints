@@ -5,12 +5,15 @@ metadata:
   namespace: argocd
   labels:
     environment: test
+  annotations:
+    description: "Test environment with auto-sync (push-on-green)"
 spec:
   project: default
   
   source:
     repoURL: https://github.com/Dylan0165/ReflectieSemester3Sprints.git
-    targetRevision: main
+    # BELANGRIJK: Gebruikt de 'deploy' branch waar build artifacts staan
+    targetRevision: deploy
     path: manifests/overlays/test
   
   destination:
@@ -18,12 +21,15 @@ spec:
     namespace: app-test
   
   syncPolicy:
+    # AUTO-SYNC: Push-on-green! Automatische deployment bij nieuwe builds
     automated:
       prune: true
       selfHeal: true
       allowEmpty: false
     syncOptions:
       - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
     retry:
       limit: 5
       backoff:
@@ -31,4 +37,4 @@ spec:
         factor: 2
         maxDuration: 3m
   
-  revisionHistoryLimit: 3
+  revisionHistoryLimit: 5

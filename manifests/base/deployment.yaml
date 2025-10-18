@@ -10,6 +10,7 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
+      # Zero downtime deployment: geen pods stoppen voordat nieuwe ready zijn
       maxUnavailable: 0
       maxSurge: 1
   selector:
@@ -35,22 +36,31 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "100m"
+          # Liveness probe: restart container if unhealthy
           livenessProbe:
             httpGet:
               path: /
               port: 80
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          # Readiness probe: alleen traffic naar ready pods (zero downtime!)
           readinessProbe:
             httpGet:
               path: /
               port: 80
             initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
           volumeMounts:
             - name: web-content
               mountPath: /usr/share/nginx/html
               readOnly: true
+      # Graceful shutdown voor zero downtime
+      terminationGracePeriodSeconds: 30
       volumes:
         - name: web-content
           configMap:
