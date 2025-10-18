@@ -71,5 +71,5 @@ jobs:
           git add .
           git commit -m "Release $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           git branch -M ${{ env.DEPLOY_BRANCH }}
-          git remote add origin https://github.com/${{ github.repository }}.git
+          git remote add origin https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git
           git push -f origin ${{ env.DEPLOY_BRANCH }}
