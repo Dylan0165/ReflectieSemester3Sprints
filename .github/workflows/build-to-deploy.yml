@@ -1,3 +1,4 @@
+# ✅ Updated for MAN6 CI/CD pipeline – auto-build & deploy to branch 'deploy'
 name: Build and Deploy to Deploy Branch
 
 on:
@@ -70,8 +71,10 @@ jobs:
       
       - name: Copy build artifacts and manifests
         run: |
-          # Clean up old files
-          git checkout main -- dist/ manifests/ README.md
+          # Clean up oude bestanden
+          rm -rf manifests dist
+          cp -r $GITHUB_WORKSPACE/manifests .
+          cp -r $GITHUB_WORKSPACE/dist .
           
           # Ensure manifests directory structure exists
           mkdir -p manifests/base
@@ -85,7 +88,16 @@ jobs:
         run: |
           # Update the kustomization.yaml to use correct relative paths
           # In deploy branch, dist/ is at root level
-          sed -i 's|index.html=../../dist/index.html|index.html=../../dist/index.html|g' manifests/base/kustomization.yaml
+          if grep -q "index.html=" manifests/base/kustomization.yaml; then
+            sed -i 's#index.html=.*#index.html=../../dist/index.html#' manifests/base/kustomization.yaml
+          else
+            echo "configMapGenerator:" >> manifests/base/kustomization.yaml
+            echo "  - name: web-content" >> manifests/base/kustomization.yaml
+            echo "    files:" >> manifests/base/kustomization.yaml
+            echo "      - index.html=../../dist/index.html" >> manifests/base/kustomization.yaml
+            echo "generatorOptions:" >> manifests/base/kustomization.yaml
+            echo "  disableNameSuffixHash: true" >> manifests/base/kustomization.yaml
+          fi
           
           echo "✅ Kustomization paths updated"
           cat manifests/base/kustomization.yaml
