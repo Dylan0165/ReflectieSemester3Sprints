@@ -30,7 +30,14 @@ spec:
             periodSeconds: 5
           volumeMounts:
             - name: web-content
-              mountPath: /usr/share/nginx/html
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+            - name: web-content
+              mountPath: /usr/share/nginx/html/assets/index-Bv6_c44F.css
+              subPath: assets/index-Bv6_c44F.css
+            - name: web-content
+              mountPath: /usr/share/nginx/html/assets/index-QwoEmne7.js
+              subPath: assets/index-QwoEmne7.js
       volumes:
         - name: web-content
           configMap:
