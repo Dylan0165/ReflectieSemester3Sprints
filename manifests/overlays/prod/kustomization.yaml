@@ -1,50 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
-# Productie omgeving configuratie
 nameSuffix: -prod
 namespace: app-prod
-
 resources:
   - ../../base
-
-commonLabels:
-  environment: production
-  deployed-by: argocd
-
-commonAnnotations:
-  description: "Production environment - Manual approval required"
-  critical: "true"
-
-# Productie draait 2 replicas voor high availability
-replicas:
-  - name: webapp
-    count: 2
-
 patches:
-  # Productie gebruikt standaard NodePort 32080
-  - target:
-      kind: Service
-      name: webapp
-    patch: |-
-      - op: replace
-        path: /spec/ports/0/nodePort
-        value: 32080
-  
-  # Verhoogde resources voor productie
   - target:
       kind: Deployment
       name: webapp
     patch: |-
       - op: replace
-        path: /spec/template/spec/containers/0/resources/requests/memory
-        value: "128Mi"
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/requests/cpu
-        value: "100m"
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/limits/memory
-        value: "256Mi"
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/limits/cpu
-        value: "200m"
+        path: /spec/replicas
+        value: 2

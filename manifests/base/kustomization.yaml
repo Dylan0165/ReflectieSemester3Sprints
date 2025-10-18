@@ -5,24 +5,5 @@ resources:
   - deployment.yaml
   - service.yaml
 
-# For Vite/React apps, you need to build first (npm run build)
-# Then the dist folder contains the production-ready files
-# 
-# IMPORTANT: Run 'npm run build' before deploying!
-# This will create the dist/ folder with index.html and assets
-configMapGenerator:
-  - name: web-content
-    files:
-      - index.html=../../dist/index.html
-    options:
-      disableNameSuffixHash: true
-
-commonLabels:
-  app.kubernetes.io/name: webapp
-  app.kubernetes.io/component: frontend
-  app.kubernetes.io/managed-by: argocd
-
-images:
-  - name: nginx
-    newName: nginx
-    newTag: alpine
+# Let op: de CI workflow voegt/forceert hieronder de verwijzing naar ../../dist/index.html
+# via configMapGenerator zodat Nginx de gebuilde site serveert.

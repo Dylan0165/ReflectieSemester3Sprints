@@ -1,40 +1,19 @@
+# MAN6 Application – auto-sync (push-on-green)
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: webapp-test
   namespace: argocd
-  labels:
-    environment: test
-  annotations:
-    description: "Test environment with auto-sync (push-on-green)"
 spec:
   project: default
-  
   source:
-    repoURL: https://github.com/Dylan0165/ReflectieSemester3Sprints.git
-    # BELANGRIJK: Gebruikt de 'deploy' branch waar build artifacts staan
+    repoURL: https://github.com/<GITHUB-USER>/<REPO>.git
     targetRevision: deploy
     path: manifests/overlays/test
-  
   destination:
     server: https://kubernetes.default.svc
     namespace: app-test
-  
   syncPolicy:
-    # AUTO-SYNC: Push-on-green! Automatische deployment bij nieuwe builds
-    automated:
-      prune: true
-      selfHeal: true
-      allowEmpty: false
+    automated: {}
     syncOptions:
       - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
-    retry:
-      limit: 5
-      backoff:
-        duration: 5s
-        factor: 2
-        maxDuration: 3m
-  
-  revisionHistoryLimit: 5

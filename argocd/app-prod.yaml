@@ -1,46 +1,18 @@
+# MAN6 Application – manual approval (geen auto-sync)
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: webapp-prod
   namespace: argocd
-  labels:
-    environment: production
-  annotations:
-    description: "Production environment - MANUAL APPROVAL REQUIRED"
-    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: ""
 spec:
   project: default
-  
   source:
-    repoURL: https://github.com/Dylan0165/ReflectieSemester3Sprints.git
-    # BELANGRIJK: Gebruikt de 'deploy' branch waar build artifacts staan
+    repoURL: https://github.com/<GITHUB-USER>/<REPO>.git
     targetRevision: deploy
     path: manifests/overlays/prod
-  
   destination:
     server: https://kubernetes.default.svc
     namespace: app-prod
-  
   syncPolicy:
-    # GEEN AUTO-SYNC: Handmatige goedkeuring vereist voor productie!
-    # automated: not set - manual sync required
     syncOptions:
       - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
-    retry:
-      limit: 5
-      backoff:
-        duration: 5s
-        factor: 2
-        maxDuration: 3m
-  
-  # Meer revision history voor productie (audit trail)
-  revisionHistoryLimit: 10
-  
-  # Ignore differences die geen impact hebben
-  ignoreDifferences:
-    - group: apps
-      kind: Deployment
-      jsonPointers:
-        - /spec/replicas

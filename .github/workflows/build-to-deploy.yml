@@ -1,11 +1,9 @@
-# ✅ Updated for MAN6 CI/CD pipeline – auto-build & deploy to branch 'deploy'
+# ✅ MAN6 CI/CD pipeline – build React+Vite en publiceer naar branch 'deploy'
 name: Build and Deploy to Deploy Branch
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ main ]
 
 env:
   NODE_VERSION: '18'
@@ -14,148 +12,64 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
     permissions:
       contents: write
-    
+
     steps:
-      - name: Checkout main branch
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 0
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
-      - name: Build application
+
+      - name: Build Vite project
         run: npm run build
-      
+
       - name: Verify build output
         run: |
-          if [ ! -d "dist" ]; then
-            echo "❌ Build failed: dist/ directory not found"
-            exit 1
-          fi
-          if [ ! -f "dist/index.html" ]; then
-            echo "❌ Build failed: dist/index.html not found"
-            exit 1
-          fi
-          echo "✅ Build successful"
-          ls -la dist/
-      
-      - name: Configure Git
+          test -f dist/index.html || (echo "dist/index.html missing" && exit 1)
+          echo "✅ Build OK"; ls -la dist
+
+      - name: Prepare deploy branch content
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@github.com"
-      
-      - name: Prepare deploy branch
-        run: |
-          # Check if deploy branch exists on remote
-          if git ls-remote --heads origin ${{ env.DEPLOY_BRANCH }} | grep -q ${{ env.DEPLOY_BRANCH }}; then
-            echo "Deploy branch exists, checking out"
-            git fetch origin ${{ env.DEPLOY_BRANCH }}
-            git checkout ${{ env.DEPLOY_BRANCH }}
-            git pull origin ${{ env.DEPLOY_BRANCH }}
-          else
-            echo "Deploy branch doesn't exist, creating new orphan branch"
-            git checkout --orphan ${{ env.DEPLOY_BRANCH }}
-            git rm -rf .
-          fi
-      
-      - name: Copy build artifacts and manifests
-        run: |
-          # Clean up oude bestanden
-          rm -rf manifests dist
-          cp -r $GITHUB_WORKSPACE/manifests .
-          cp -r $GITHUB_WORKSPACE/dist .
+          rm -rf .deploy-tmp
+          mkdir -p .deploy-tmp
+          cp -r manifests .deploy-tmp/
+          cp -r dist .deploy-tmp/
+          cd .deploy-tmp
           
-          # Ensure manifests directory structure exists
-          mkdir -p manifests/base
-          mkdir -p manifests/overlays/test
-          mkdir -p manifests/overlays/acc
-          mkdir -p manifests/overlays/prod
-          
-          echo "✅ Files prepared for deployment"
-      
-      - name: Update kustomization.yaml paths
-        run: |
-          # Update the kustomization.yaml to use correct relative paths
-          # In deploy branch, dist/ is at root level
           if grep -q "index.html=" manifests/base/kustomization.yaml; then
             sed -i 's#index.html=.*#index.html=../../dist/index.html#' manifests/base/kustomization.yaml
           else
-            echo "configMapGenerator:" >> manifests/base/kustomization.yaml
-            echo "  - name: web-content" >> manifests/base/kustomization.yaml
-            echo "    files:" >> manifests/base/kustomization.yaml
-            echo "      - index.html=../../dist/index.html" >> manifests/base/kustomization.yaml
-            echo "generatorOptions:" >> manifests/base/kustomization.yaml
-            echo "  disableNameSuffixHash: true" >> manifests/base/kustomization.yaml
-          fi
+            cat >> manifests/base/kustomization.yaml <<'EOF'
           
-          echo "✅ Kustomization paths updated"
-          cat manifests/base/kustomization.yaml
-      
-      - name: Create deployment info
-        run: |
-          cat > DEPLOYMENT_INFO.md << EOF
-          # Deployment Information
-          
-          **Build Date**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
-          **Commit SHA**: ${{ github.sha }}
-          **Commit Message**: ${{ github.event.head_commit.message }}
-          **Branch**: main
-          **Workflow**: ${{ github.workflow }}
-          **Run Number**: ${{ github.run_number }}
-          
-          ## Build Status
-          ✅ Build completed successfully
-          ✅ Ready for Argo CD deployment
-          
-          ## Deployed Files
-          - dist/ (production build)
-          - manifests/ (Kubernetes manifests)
-          
-          ## Environments
-          - **Test**: Auto-sync enabled (push-on-green)
-          - **Acc**: Auto-sync enabled (push-on-green)
-          - **Prod**: Manual sync required (manual approval)
+          configMapGenerator:
+            - name: web-content
+              files:
+                - index.html=../../dist/index.html
+          generatorOptions:
+            disableNameSuffixHash: true
           EOF
-      
-      - name: Commit and push to deploy branch
-        run: |
-          # Add all files
-          git add -A
-          
-          # Check if there are changes to commit
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            # Commit with timestamp
-            TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-            git commit -m "Release ${TIMESTAMP}"
-            
-            # Push to deploy branch
-            git push origin ${{ env.DEPLOY_BRANCH }}
-            
-            echo "✅ Successfully pushed to ${{ env.DEPLOY_BRANCH }} branch"
           fi
-      
-      - name: Deployment summary
-        run: |
-          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Build completed successfully" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Pushed to \`${{ env.DEPLOY_BRANCH }}\` branch" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
-          echo "- **Test & Acc**: Will auto-deploy via Argo CD (push-on-green)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Prod**: Requires manual sync in Argo CD UI" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          
+          cat > README.md <<'EOF'
+          # Auto-generated build for Argo CD (branch: deploy)
+          Do not edit by hand – updated by GitHub Actions.
+          EOF
+          
+          git init
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Release $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          git branch -M ${{ env.DEPLOY_BRANCH }}
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git push -f origin ${{ env.DEPLOY_BRANCH }}
