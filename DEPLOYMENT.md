@@ -62,6 +62,43 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 ## 🎯 Deployment
 
+### Methode 1: Via ConfigMap (Development/Demo)
+
+Deze methode is geschikt voor demonstratie en development. De `index.html` wordt direct uit de repository geladen via een ConfigMap.
+
+```bash
+# Deploy Test Application
+kubectl apply -f argocd/app-test.yaml
+
+# Deploy Production Application
+kubectl apply -f argocd/app-prod.yaml
+```
+
+**Note**: De huidige configuratie gebruikt de root `index.html` uit de repository. Voor een volledige production deployment, gebruik Methode 2.
+
+### Methode 2: Via Docker Image (Production - Aanbevolen)
+
+Voor een productie-omgeving is het beter om een Docker image te gebruiken met de gebouwde applicatie:
+
+1. **Build de applicatie lokaal**:
+```bash
+npm run build
+```
+
+2. **Build en push Docker image**:
+```bash
+# Build
+docker build -t ghcr.io/dylan0165/reflectiesemester3sprints:latest .
+
+# Login (gebruik een Personal Access Token)
+echo $GITHUB_TOKEN | docker login ghcr.io -u Dylan0165 --password-stdin
+
+# Push
+docker push ghcr.io/dylan0165/reflectiesemester3sprints:latest
+```
+
+3. **Update de deployment** om de custom image te gebruiken in plaats van ConfigMap.
+
 ### Optie 1: Via Argo CD UI
 1. Open Argo CD UI: https://localhost:8080
 2. Login met admin credentials

@@ -5,6 +5,11 @@ resources:
   - deployment.yaml
   - service.yaml
 
+# For Vite/React apps, you need to build first (npm run build)
+# Then the dist folder contains the production-ready files
+# 
+# IMPORTANT: Run 'npm run build' before deploying!
+# This will create the dist/ folder with index.html and assets
 configMapGenerator:
   - name: web-content
     files:
