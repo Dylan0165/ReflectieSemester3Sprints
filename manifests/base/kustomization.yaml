@@ -5,12 +5,6 @@ resources:
   - deployment.yaml
   - service.yaml
 
-configMapGenerator:
-  - name: webapp-files
-    files:
-      - index.html=./dist/index.html
-      - assets/index-Bv6_c44F.css=./dist/assets/index-Bv6_c44F.css
-      - assets/index-QwoEmne7.js=./dist/assets/index-QwoEmne7.js
-
-generatorOptions:
-  disableNameSuffixHash: true
+commonLabels:
+  app: webapp
+  managed-by: kustomize
