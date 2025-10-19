@@ -2,37 +2,35 @@ name: Build & Deploy Reflectie (K3s Canary)
 
 on:
   push:
-    branches:
-      - stable
-      - canary
+    branches: [ "stable", "canary" ]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
+    name: Build React App
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          
+
       - name: Install dependencies
         run: npm ci
-        
+
       - name: Build React app
         run: npm run build
-        
-      - name: Commit build output
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add dist -f
-          git commit -m "Add build output" || echo "No changes"
-          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: reflectie-build
+          path: build/
+          if-no-files-found: error
 
   deploy:
     name: Deploy to K3s Cluster
@@ -61,21 +59,23 @@ jobs:
           cp -r /tmp/build/* /tmp/webroot/
           echo "${{ github.ref_name }}-v$(date +%s)" > /tmp/webroot/version.txt
 
-          # Traefik config in juiste namespace
+          # Apply Traefik config (kube-system)
           if [ -f traefik-config.yaml ]; then
             kubectl -n kube-system apply -f traefik-config.yaml
             kubectl -n kube-system rollout restart deploy/traefik || true
           fi
 
-          # Reflectie-app resources
+          # Reflectie app manifests (namespace reflectie)
           cd ~/k3s-manifests
           kubectl -n reflectie apply -f nginx-configmap.yaml
           kubectl -n reflectie apply -f reflectie-service.yaml
           kubectl -n reflectie apply -f reflectie-ingress.yaml
 
+          # Update webroot configmap
           kubectl -n reflectie delete cm reflectie-webroot --ignore-not-found=true
           kubectl -n reflectie create cm reflectie-webroot --from-file=/tmp/webroot
 
+          # Re-deploy
           kubectl -n reflectie apply -f reflectie-stable.yaml
           kubectl -n reflectie apply -f reflectie-canary.yaml
           kubectl -n reflectie rollout restart deploy/reflectie-${{ github.ref_name }}
