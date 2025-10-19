@@ -5,10 +5,11 @@ metadata:
   namespace: reflectie
   labels:
     app: reflectie
+    tier: web
 spec:
   selector:
     app: reflectie
-    track: active
+    tier: web
   ports:
     - name: http
       port: 80

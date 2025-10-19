@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reflectie-stable
+  namespace: reflectie
+  labels:
+    app: reflectie
+    tier: web
+    track: stable
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: reflectie
+      tier: web
+      track: stable
+  template:
+    metadata:
+      labels:
+        app: reflectie
+        tier: web
+        track: stable
+    spec:
+      initContainers:
+        - name: fetch-build
+          image: alpine:3.20
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              apk add --no-cache unzip curl
+              mkdir -p /tmp/site
+              echo "Downloading latest stable build..."
+              curl -L -o /tmp/site.zip "https://github.com/Dylan0165/ReflectieSemester3Sprints/archive/refs/heads/stable.zip"
+              unzip -qo /tmp/site.zip -d /tmp
+              cp -r /tmp/ReflectieSemester3Sprints-stable/build/* /webroot/
+              echo "stable-v1" > /webroot/version.txt
+          volumeMounts:
+            - name: webroot
+              mountPath: /webroot
+      containers:
+        - name: nginx
+          image: nginx:1.25-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: webroot
+              mountPath: /usr/share/nginx/html
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+          readinessProbe:
+            httpGet:
+              path: /version.txt
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+      volumes:
+        - name: webroot
+          emptyDir: {}
+        - name: nginx-conf
+          configMap:
+            name: reflectie-nginx-conf
+            items:
+              - key: default.conf
+                path: default.conf
