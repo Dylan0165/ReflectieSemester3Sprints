@@ -14,46 +14,42 @@ spec:
       labels:
         app: reflectie-website
     spec:
+      volumes:
+        - name: site
+          emptyDir: {}
+        - name: nginx-conf
+          configMap:
+            name: reflectie-nginx-conf
+            items:
+              - key: default.conf
+                path: default.conf
+      initContainers:
+        - name: fetch-static
+          image: alpine:3.20
+          env:
+            - name: ZIP_URL
+              value: "https://codeload.github.com/dylan0165/ReflectieSemester3Sprints/zip/refs/heads/deploy-static"
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eux
+              apk add --no-cache curl unzip
+              mkdir -p /work
+              curl -L "$ZIP_URL" -o /work/site.zip
+              unzip /work/site.zip -d /work
+              SRC_DIR=$(find /work -maxdepth 1 -type d -name "*-deploy-static" | head -n1)
+              cp -R "$SRC_DIR"/* /var/www/
+          volumeMounts:
+            - name: site
+              mountPath: /var/www
       containers:
         - name: nginx
-          image: ghcr.io/dylan0165/reflectie-website:latest # Will be overridden by overlay
-          imagePullPolicy: Always
+          image: nginx:stable-alpine
           ports:
             - name: http
               containerPort: 80
-              protocol: TCP
-          resources:
-            requests:
-              cpu: 50m
-              memory: 64Mi
-            limits:
-              cpu: 200m
-              memory: 128Mi
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 10
-            periodSeconds: 30
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            runAsUser: 101  # nginx user
-            runAsGroup: 101
-            readOnlyRootFilesystem: true
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
-            - name: nginx-cache
-              mountPath: /var/cache/nginx
-      volumes:
-        - name: tmp
-          emptyDir: {}
-        - name: nginx-cache
-          emptyDir: {}
+            - name: site
+              mountPath: /usr/share/nginx/html
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
