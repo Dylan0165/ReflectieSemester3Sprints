@@ -1,0 +1,39 @@
+# Ignore node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore documentation
+*.md
+!README.md
+
+# Ignore test files
+*.test.js
+*.spec.js
+coverage/
+
+# Ignore development files
+.env.local
+.env.development
+.env.test
+
+# Ignore build artifacts (we build inside Docker)
+dist/
+
+# Ignore CI/CD
+.github/
+
+# Ignore manifests (not needed in image)
+manifests/
+argocd/

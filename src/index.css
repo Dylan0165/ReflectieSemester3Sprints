@@ -1,0 +1,142 @@
+:root {
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  
+  /* Rolex Cyberpunk Colors */
+  --rolex-green: #006039;
+  --rolex-green-light: #008050;
+  --rolex-green-dark: #004d2e;
+  --rolex-gold: #D4AF37;
+  --rolex-gold-bright: #FFD700;
+  --rolex-black: #0a0a0a;
+  --tech-glow: #00ff88;
+  
+  color-scheme: dark;
+  color: #e0e0e0;
+  background-color: var(--rolex-black);
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--rolex-black);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated tech grid background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(0, 96, 57, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 96, 57, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+/* Glowing orbs in background */
+body::after {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 20% 50%, rgba(0, 96, 57, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+              radial-gradient(circle at 40% 20%, rgba(0, 96, 57, 0.08) 0%, transparent 50%);
+  animation: orbitGlow 30s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes orbitGlow {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(30px, -30px) rotate(180deg);
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Glowing text effect */
+.glow-text {
+  text-shadow: 0 0 10px var(--rolex-gold),
+               0 0 20px var(--rolex-gold),
+               0 0 30px var(--rolex-gold);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Scanning line effect */
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}

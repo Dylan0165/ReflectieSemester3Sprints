@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: reflectie-website-test
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Dylan0165/ReflectieSemester3Sprints.git
+    targetRevision: deploy       # <-- je YAML-bestanden blijven in branch deploy
+    path: manifests/overlays/test
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app-test
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

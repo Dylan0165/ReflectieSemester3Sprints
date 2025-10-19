@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webapp-test
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Dylan0165/ReflectieSemester3Sprints.git
+    targetRevision: main
+    path: manifests/overlays/test
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app-test
+  syncPolicy:
+    automated:
+      prune: true      # Automatically delete resources that no longer exist in Git
+      selfHeal: true   # Automatically sync if drift is detected
+      allowEmpty: false # Prevent deletion of all resources
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true

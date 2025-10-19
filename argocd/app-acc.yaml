@@ -1,0 +1,19 @@
+# MAN6 Application – auto-sync (push-on-green)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webapp-acc
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/<GITHUB-USER>/<REPO>.git
+    targetRevision: deploy
+    path: manifests/overlays/acc
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app-acc
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true

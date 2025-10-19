@@ -1,0 +1,15 @@
+.sprint-2-hero {
+  background: 
+    radial-gradient(circle at 70% 50%, rgba(212, 175, 55, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+}
+
+.sprint-2-hero::before {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    rgba(212, 175, 55, 0.03) 1px,
+    transparent 2px,
+    transparent 30px
+  );
+}

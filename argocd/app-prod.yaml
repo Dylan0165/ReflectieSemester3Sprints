@@ -1,0 +1,18 @@
+# MAN6 Application – manual approval (geen auto-sync)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webapp-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/<GITHUB-USER>/<REPO>.git
+    targetRevision: deploy
+    path: manifests/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app-prod
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
