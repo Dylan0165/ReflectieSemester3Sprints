@@ -35,31 +35,47 @@ jobs:
           git push origin HEAD:${{ github.ref_name }}
 
   deploy:
+    name: Deploy to K3s Cluster
     runs-on: self-hosted
     needs: build
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Apply manifests to K3s
+      - name: Ensure working directories exist
         run: |
-          cd k3s-manifests
-          
-          # Apply Traefik config in kube-system namespace
+          mkdir -p /tmp/build
+          mkdir -p /tmp/webroot
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: reflectie-build
+          path: /tmp/build
+
+      - name: Verify build files
+        run: |
+          echo "✅ Build artifact contents:"
+          ls -l /tmp/build || echo "❌ Artifact missing!"
+
+      - name: Copy build to webroot and deploy
+        run: |
+          set -e
+          cp -r /tmp/build/* /tmp/webroot/
+          echo "${{ github.ref_name }}-v$(date +%s)" > /tmp/webroot/version.txt
+
+          # Traefik config in juiste namespace
           if [ -f traefik-config.yaml ]; then
             kubectl -n kube-system apply -f traefik-config.yaml
             kubectl -n kube-system rollout restart deploy/traefik || true
           fi
-          
-          # Apply Reflectie resources in reflectie namespace
+
+          # Reflectie-app resources
+          cd ~/k3s-manifests
           kubectl -n reflectie apply -f nginx-configmap.yaml
           kubectl -n reflectie apply -f reflectie-service.yaml
           kubectl -n reflectie apply -f reflectie-ingress.yaml
-          
-          # Update webroot ConfigMap
+
           kubectl -n reflectie delete cm reflectie-webroot --ignore-not-found=true
           kubectl -n reflectie create cm reflectie-webroot --from-file=/tmp/webroot
-          
-          # Apply deployments and restart rollout
+
           kubectl -n reflectie apply -f reflectie-stable.yaml
           kubectl -n reflectie apply -f reflectie-canary.yaml
           kubectl -n reflectie rollout restart deploy/reflectie-${{ github.ref_name }}
