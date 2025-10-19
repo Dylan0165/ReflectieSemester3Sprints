@@ -5,6 +5,7 @@ metadata:
   namespace: reflectie
   annotations:
     kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web2001
 spec:
   rules:
     - host: reflectie.local
@@ -16,4 +17,4 @@ spec:
               service:
                 name: reflectie
                 port:
-                  number: 80
+                  number: 2001
