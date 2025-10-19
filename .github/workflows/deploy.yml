@@ -1,0 +1,41 @@
+name: Deploy to K3s
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    env:
+      KUBECONFIG: ~/.kube/config
+      ZIP_URL: https://codeload.github.com/${{ github.repository }}/zip/refs/heads/deploy
+
+    steps:
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure K3s access
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBERNETES_CA }}" > ca.crt
+          kubectl config set-cluster k3s --server=${{ secrets.KUBERNETES_SERVER }} --certificate-authority=ca.crt
+          kubectl config set-credentials ci --token=${{ secrets.KUBERNETES_TOKEN }}
+          kubectl config set-context k3s --cluster=k3s --user=ci --namespace=reflectie
+          kubectl config use-context k3s
+
+      - name: Update deployment and switch traffic
+        run: |
+          # Update ZIP_URL in green deployment
+          kubectl set env deployment/reflectie-green -n reflectie ZIP_URL=$ZIP_URL
+          
+          # Restart deployment and wait for rollout
+          kubectl rollout restart deployment/reflectie-green -n reflectie
+          kubectl rollout status deployment/reflectie-green -n reflectie --timeout=300s
+          
+          # Switch traffic
+          kubectl label deployment reflectie-blue -n reflectie track=standby --overwrite
+          kubectl label deployment reflectie-green -n reflectie track=active --overwrite

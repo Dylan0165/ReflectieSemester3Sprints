@@ -1,4 +1,4 @@
-name: Build static site and publish to deploy
+name: Build static site and publish to deploy-static
 
 on:
   push:
@@ -27,17 +27,17 @@ jobs:
       - name: Build Vite app
         run: npm run build
 
-      - name: Publish dist/ to deploy branch
+      - name: Publish dist/ to deploy-static branch
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           rm -rf /tmp/deploy && mkdir -p /tmp/deploy
           cp -R dist/* /tmp/deploy/
-          git checkout --orphan deploy
+          git checkout --orphan deploy-static
           git reset --hard
           git clean -fdx
           rm -rf ./*
           cp -R /tmp/deploy/* .
           git add .
           git commit -m "Publish static build $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          git push origin HEAD:deploy --force
+          git push origin HEAD:deploy-static --force

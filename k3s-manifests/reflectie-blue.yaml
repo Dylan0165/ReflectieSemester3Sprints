@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reflectie-blue
+  namespace: reflectie
+  labels:
+    app: reflectie
+    color: blue
+    track: standby
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reflectie
+      color: blue
+  template:
+    metadata:
+      labels:
+        app: reflectie
+        color: blue
+    spec:
+      volumes:
+        - name: site
+          emptyDir: {}
+        - name: nginx-conf
+          configMap:
+            name: reflectie-nginx-conf
+            items:
+              - key: default.conf
+                path: default.conf
+      initContainers:
+        - name: fetch-static
+          image: alpine:3.20
+          env:
+            - name: ZIP_URL
+              value: "https://codeload.github.com/Dylan0165/ReflectieSemester3Sprints/zip/refs/heads/deploy"
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eux
+              apk add --no-cache curl unzip
+              mkdir -p /work
+              curl -L "$ZIP_URL" -o /work/site.zip
+              unzip /work/site.zip -d /work
+              SRC_DIR=$(find /work -maxdepth 1 -type d -name "*-deploy" | head -n1)
+              cp -R "$SRC_DIR"/* /var/www/
+          volumeMounts:
+            - name: site
+              mountPath: /var/www
+      containers:
+        - name: nginx
+          image: nginx:stable-alpine
+          ports:
+            - name: http
+              containerPort: 80
+          volumeMounts:
+            - name: site
+              mountPath: /usr/share/nginx/html
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
