@@ -1,22 +1,21 @@
 ﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webapp
+  name: reflectie-website
   labels:
-    app.kubernetes.io/name: webapp
-    app.kubernetes.io/part-of: reflectie-website
+    app: reflectie-website
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: webapp
+      app: reflectie-website
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: webapp
+        app: reflectie-website
     spec:
       containers:
-        - name: webapp
+        - name: nginx
           image: ghcr.io/dylan0165/reflectie-website:latest # Will be overridden by overlay
           imagePullPolicy: Always
           ports:
