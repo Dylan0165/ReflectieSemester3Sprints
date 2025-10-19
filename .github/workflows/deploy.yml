@@ -43,5 +43,23 @@ jobs:
       - name: Apply manifests to K3s
         run: |
           cd k3s-manifests
-          kubectl -n reflectie apply -f .
+          
+          # Apply Traefik config in kube-system namespace
+          if [ -f traefik-config.yaml ]; then
+            kubectl -n kube-system apply -f traefik-config.yaml
+            kubectl -n kube-system rollout restart deploy/traefik || true
+          fi
+          
+          # Apply Reflectie resources in reflectie namespace
+          kubectl -n reflectie apply -f nginx-configmap.yaml
+          kubectl -n reflectie apply -f reflectie-service.yaml
+          kubectl -n reflectie apply -f reflectie-ingress.yaml
+          
+          # Update webroot ConfigMap
+          kubectl -n reflectie delete cm reflectie-webroot --ignore-not-found=true
+          kubectl -n reflectie create cm reflectie-webroot --from-file=/tmp/webroot
+          
+          # Apply deployments and restart rollout
+          kubectl -n reflectie apply -f reflectie-stable.yaml
+          kubectl -n reflectie apply -f reflectie-canary.yaml
           kubectl -n reflectie rollout restart deploy/reflectie-${{ github.ref_name }}
