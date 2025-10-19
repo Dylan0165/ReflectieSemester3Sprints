@@ -42,7 +42,7 @@ jobs:
             token: ${{ secrets.KUBERNETES_TOKEN }}
         EOF
         kubectl config get-contexts
-        kubectl version --short
+        kubectl version
 
     - name: Update ZIP_URL in green deployment
       run: |
